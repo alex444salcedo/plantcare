@@ -1,40 +1,42 @@
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 export default function Home() {
+  const navigate = useNavigate()
+
+  const handleConocenos = () => {
+    navigate('/about')
+  }
+
   return (
-    <div className="container mt-4">
-      <h1 className="mb-4">Bienvenido a PlantCare</h1>
+    <div
+      className="d-flex flex-column justify-content-center align-items-center text-center"
+      style={{
+        height: '100vh',
+        backgroundColor: '#d7e4d4',
+        padding: '0 20px',
+      }}
+    >
+      <h1 style={{ fontWeight: 'bold', fontSize: '3rem' }}>PlantCare</h1>
+      <p style={{ fontSize: '1.5rem', marginBottom: '2rem' }}>
+        Cuida tus plantas como un experto
+      </p>
+      <button
+        onClick={handleConocenos}
+        style={{
+          padding: '10px 25px',
+          fontSize: '1.2rem',
+          border: '2px solid black',
+          background: 'transparent',
+          cursor: 'pointer',
+          borderRadius: '5px',
+        }}
+      >
+        Conócenos
+      </button>
 
-      <div className="d-flex justify-content-between mb-4">
-        <Link to="/profile" className="btn btn-secondary">
-          Mi Perfil
-        </Link>
-        <button className="btn btn-danger">Cerrar sesión</button>
-      </div>
-
-      <section>
-        <h2>Mi colección de plantas</h2>
-        <Link to="/plant-form" className="btn btn-primary mb-3">
-          + Agregar Planta
-        </Link>
-        <p>Aquí mostrarás la lista de plantas del usuario con opciones para editar y eliminar.</p>
-        {/* Aquí podrías mapear la lista de plantas del usuario */}
-      </section>
-
-      <section className="mt-5">
-        <h2>Recordatorios de cuidado</h2>
-        <Link to="/reminders" className="btn btn-primary mb-3">
-          Ver Recordatorios
-        </Link>
-        {/* Aquí podrías mostrar resumen o lista de recordatorios */}
-      </section>
-
-      <section className="mt-5">
-        <h2>Comunidad</h2>
-        <Link to="/community" className="btn btn-primary mb-3">
-          Ir a Comunidad
-        </Link>
-      </section>
+      <footer style={{ position: 'absolute', bottom: 10, fontSize: '0.9rem' }}>
+        Footer: Enlaces legales, redes sociales, contacto
+      </footer>
     </div>
   )
 }
