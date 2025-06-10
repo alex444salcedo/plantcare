@@ -1,11 +1,29 @@
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Home() {
-  const navigate = useNavigate()
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // Verificar si está autenticado
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Verificar si el token existe en localStorage
+    const token = localStorage.getItem('token');
+    
+    if (token) {
+      setIsAuthenticated(true); // Si hay token, el usuario está autenticado
+    } else {
+      setIsAuthenticated(false); // Si no hay token, redirige al login
+      navigate('/home'); // Redirigir al login si no hay token
+    }
+  }, [navigate]); // Dependemos de navigate para redirigir
 
   const handleConocenos = () => {
-    navigate('/about')
-  }
+    navigate('/about'); // Redirige a About
+  };
+
+  const handleComenzar = () => {
+    navigate('/login'); // Redirige al Login
+  };
 
   return (
     <div
@@ -33,10 +51,24 @@ export default function Home() {
       >
         Conócenos
       </button>
+      <button
+        onClick={handleComenzar}
+        style={{
+          padding: '10px 25px',
+          fontSize: '1.2rem',
+          border: '2px solid black',
+          background: 'transparent',
+          cursor: 'pointer',
+          borderRadius: '5px',
+          marginTop: '20px',
+        }}
+      >
+        Comenzar mi jardín digital
+      </button>
 
       <footer style={{ position: 'absolute', bottom: 10, fontSize: '0.9rem' }}>
         Footer: Enlaces legales, redes sociales, contacto
       </footer>
     </div>
-  )
+  );
 }

@@ -7,14 +7,20 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "node server.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
     "axios": "^1.9.0",
+    "bcryptjs": "^3.0.2",
+    "body-parser": "^2.2.0",
     "bootstrap": "^5.3.6",
     "clsx": "^2.1.1",
+    "cors": "^2.8.5",
     "date-fns": "^4.1.0",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
     "mysql2": "^3.14.1",
     "react": "^19.1.0",
@@ -23,6 +29,7 @@
     "react-hook-form": "^7.56.4",
     "react-router-dom": "^7.6.1",
     "react-toastify": "^11.0.5",
+    "styled-components": "^6.1.18",
     "yup": "^1.6.1"
   },
   "devDependencies": {
@@ -37,5 +44,18 @@
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.30.1",
     "vite": "^6.3.5"
-  }
+  },
+  "description": "This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
+  "main": "eslint.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alex444salcedo/plantcare.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alex444salcedo/plantcare/issues"
+  },
+  "homepage": "https://github.com/alex444salcedo/plantcare#readme"
 }

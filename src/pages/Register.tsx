@@ -1,84 +1,99 @@
-import { useForm } from 'react-hook-form'
-import { Link, useNavigate } from 'react-router-dom'
-import * as yup from 'yup'
-import { yupResolver } from '@hookform/resolvers/yup'
-
-type RegisterForm = {
-  email: string
-  password: string
-  confirmPassword: string
-}
-
-const schema = yup.object({
-  email: yup.string().email('Correo inválido').required('Requerido'),
-  password: yup.string().min(6, 'Mínimo 6 caracteres').required('Requerido'),
-  confirmPassword: yup
-    .string()
-    .oneOf([yup.ref('password')], 'Las contraseñas deben coincidir')
-    .required('Requerido'),
-}).required()
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { RegisterContainer, Title, Input, Button, LinkText } from './Register.styles';
 
 export default function Register() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<RegisterForm>({
-    resolver: yupResolver(schema),
-  })
-  const navigate = useNavigate()
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [name, setName] = useState('');
+  const [location, setLocation] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  const onSubmit = (data: RegisterForm) => {
-    console.log('Register data:', data)
-    // Aquí iría llamada API para registrar usuario
-    // Si éxito:
-    navigate('/login')
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Validación
+    if (!email || !password || !confirmPassword || !name || !location) {
+      setError('Por favor ingresa todos los campos.');
+      return;
+    }
+
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      setError('Por favor ingresa un correo válido.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('Las contraseñas no coinciden.');
+      return;
+    }
+
+    setError(''); // Limpiar el error
+
+    const userData = { email, password, name, location };
+
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('token', data.token); // Guardamos el token
+        navigate('/library'); // Redirigimos a Library
+      } else {
+        setError('Error al registrar. Intenta de nuevo.');
+      }
+    } catch (error) {
+      console.error('Error al enviar los datos:', error);
+      setError('Hubo un error en la conexión.');
+    }
+  };
 
   return (
-    <div className="container mt-5" style={{ maxWidth: 400 }}>
-      <h2 className="mb-4 text-center">Registro</h2>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="mb-3">
-          <label className="form-label">Correo electrónico</label>
-          <input
-            type="email"
-            className={`form-control ${errors.email ? 'is-invalid' : ''}`}
-            {...register('email')}
-          />
-          <div className="invalid-feedback">{errors.email?.message}</div>
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Contraseña</label>
-          <input
-            type="password"
-            className={`form-control ${errors.password ? 'is-invalid' : ''}`}
-            {...register('password')}
-          />
-          <div className="invalid-feedback">{errors.password?.message}</div>
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Confirmar contraseña</label>
-          <input
-            type="password"
-            className={`form-control ${
-              errors.confirmPassword ? 'is-invalid' : ''
-            }`}
-            {...register('confirmPassword')}
-          />
-          <div className="invalid-feedback">{errors.confirmPassword?.message}</div>
-        </div>
-
-        <button className="btn btn-primary w-100" type="submit">
-          Registrarse
-        </button>
+    <RegisterContainer>
+      <Title>Registrarse</Title>
+      <form onSubmit={handleSubmit}>
+        <Input
+          type="email"
+          placeholder="Correo Electrónico"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <Input
+          type="password"
+          placeholder="Contraseña"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <Input
+          type="password"
+          placeholder="Confirmar Contraseña"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+        />
+        <Input
+          type="text"
+          placeholder="Nombre"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+        <Input
+          type="text"
+          placeholder="Ubicación"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+        />
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+        <Button type="submit">Registrarse</Button>
       </form>
-
-      <p className="mt-3 text-center">
-        ¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link>
-      </p>
-    </div>
-  )
+      <LinkText>
+        ¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a>
+      </LinkText>
+    </RegisterContainer>
+  );
 }

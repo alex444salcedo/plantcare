@@ -1,59 +1,65 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-
-type Planta = {
-  id: number
-  nombre: string
-  especie: string
-  descripcion: string
-}
-
-const plantasMock: Planta[] = [
-  { id: 1, nombre: 'Cactus', especie: 'Succulent', descripcion: 'Planta que requiere poco riego.' },
-  { id: 2, nombre: 'Helecho', especie: 'Pteridophyta', descripcion: 'Le gusta la sombra y humedad.' },
-  { id: 3, nombre: 'Orquídea', especie: 'Orchidaceae', descripcion: 'Necesita cuidados especiales.' },
-]
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  LibraryContainer,
+  Title,
+  PlantList,
+  PlantItem,
+  PlantName,
+  PlantSpecies,
+  Button,
+  PlantImage,
+  NoPlantsMessage,
+  ButtonContainer,
+  SectionButton
+} from './Library.styles';
 
 export default function Library() {
-  const [search, setSearch] = useState('')
+  const [plants, setPlants] = useState([]);
+  const navigate = useNavigate();
 
-  const plantasFiltradas = plantasMock.filter(
-    (p) =>
-      p.nombre.toLowerCase().includes(search.toLowerCase()) ||
-      p.especie.toLowerCase().includes(search.toLowerCase())
-  )
+  useEffect(() => {
+    // Verificar si el token existe en localStorage
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      navigate('/login'); // Si no está autenticado, redirige al login
+    } else {
+      // Aquí se deberían obtener las plantas del usuario
+      fetch('http://localhost:5000/api/plants', {
+        headers: { 'Authorization': `Bearer ${token}` },
+      })
+        .then((response) => response.json())
+        .then((data) => setPlants(data.plants)) // Aquí se supone que la respuesta contiene un array de plantas
+        .catch((error) => console.error(error));
+    }
+  }, [navigate]);
 
   return (
-    <div className="container mt-4" style={{ maxWidth: 800 }}>
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2>Biblioteca de Plantas</h2>
-        <Link to="/plant-form" className="btn btn-success">
-          + Agregar Planta
-        </Link>
-      </div>
-
-      <input
-        type="text"
-        className="form-control mb-3"
-        placeholder="Buscar planta por nombre o especie"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
-
-      {plantasFiltradas.length === 0 ? (
-        <p>No se encontraron plantas.</p>
+    <LibraryContainer>
+      <Title>Mi Jardín</Title>
+      {plants.length === 0 ? (
+        <NoPlantsMessage>No tienes plantas en tu jardín.</NoPlantsMessage>
       ) : (
-        <ul className="list-group">
-          {plantasFiltradas.map((planta) => (
-            <li key={planta.id} className="list-group-item">
-              <Link to={`/plant/${planta.id}`}>
-                <strong>{planta.nombre}</strong> ({planta.especie})
-              </Link>{' '}
-              — {planta.descripcion}
-            </li>
+        <PlantList>
+          {plants.map((plant) => (
+            <PlantItem key={plant.id}>
+              <PlantImage src={plant.image_url || '/default-image.jpg'} alt={plant.name} />
+              <PlantName>{plant.name}</PlantName>
+              <PlantSpecies>{plant.species}</PlantSpecies>
+              <Button onClick={() => navigate(`/plant/${plant.id}`)}>Ver detalles</Button>
+            </PlantItem>
           ))}
-        </ul>
+        </PlantList>
       )}
-    </div>
-  )
+
+      <ButtonContainer>
+        <SectionButton onClick={() => navigate('/noticias')}>Noticias</SectionButton>
+        <SectionButton onClick={() => navigate('/reminders')}>Recordatorios</SectionButton>
+        <SectionButton onClick={() => navigate('/community')}>Comunidad</SectionButton>
+        <SectionButton onClick={() => navigate('/contacto')}>Soporte</SectionButton>
+        <SectionButton onClick={() => navigate('/profile')}>Mi Perfil</SectionButton>
+      </ButtonContainer>
+    </LibraryContainer>
+  );
 }

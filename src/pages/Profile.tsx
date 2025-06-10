@@ -1,45 +1,41 @@
-import { useForm } from 'react-hook-form'
-
-type ProfileForm = {
-  name: string
-  email: string
-  location: string
-}
+import { useState } from 'react';
+import { ProfileContainer, Title, Input, Button } from './Profile.styles';
 
 export default function Profile() {
-  const { register, handleSubmit } = useForm<ProfileForm>({
-    defaultValues: {
-      name: 'Alejandro Salcedo',
-      email: 'user@example.com',
-      location: 'Ciudad',
-    },
-  })
+  const [name, setName] = useState('Alejandro');
+  const [email, setEmail] = useState('user@example.com');
+  const [location, setLocation] = useState('Ciudad');
 
-  const onSubmit = (data: ProfileForm) => {
-    console.log('Actualizar perfil:', data)
-    // Aquí iría llamada a API para actualizar datos
-  }
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Aquí pondrías la lógica para actualizar el perfil
+    alert('Perfil actualizado');
+  };
 
   return (
-    <div className="container mt-4" style={{ maxWidth: 600 }}>
-      <h2>Editar Perfil</h2>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="mb-3">
-          <label className="form-label">Nombre</label>
-          <input className="form-control" {...register('name')} />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Correo electrónico</label>
-          <input className="form-control" {...register('email')} disabled />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Ubicación</label>
-          <input className="form-control" {...register('location')} />
-        </div>
-        <button className="btn btn-primary" type="submit">
-          Guardar cambios
-        </button>
+    <ProfileContainer>
+      <Title>Editar Perfil</Title>
+      <form onSubmit={handleSubmit}>
+        <Input
+          type="text"
+          placeholder="Nombre"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+        <Input
+          type="email"
+          placeholder="Correo Electrónico"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <Input
+          type="text"
+          placeholder="Ubicación"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+        />
+        <Button type="submit">Guardar Cambios</Button>
       </form>
-    </div>
-  )
+    </ProfileContainer>
+  );
 }

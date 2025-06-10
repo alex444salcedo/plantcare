@@ -1,64 +1,74 @@
-import { useForm } from 'react-hook-form'
-import { useNavigate, useParams } from 'react-router-dom'
-
-type PlantaForm = {
-  nombre: string
-  especie: string
-  descripcion: string
-  cuidados: string
-}
-
-// Mock para edición (simula que traes datos de backend)
-const plantasMock = [
-  { id: 1, nombre: 'Cactus', especie: 'Succulent', descripcion: '', cuidados: '' },
-  { id: 2, nombre: 'Helecho', especie: 'Pteridophyta', descripcion: '', cuidados: '' },
-]
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { PlantFormContainer, Title, Input, Textarea, Button } from './PlantForm.styles';
 
 export default function PlantForm() {
-  const { id } = useParams<{ id?: string }>()
-  const navigate = useNavigate()
+  const [name, setName] = useState('');
+  const [species, setSpecies] = useState('');
+  const [description, setDescription] = useState('');
+  const [careInstructions, setCareInstructions] = useState('');
 
-  const plantaEdit = plantasMock.find((p) => p.id === Number(id))
+  const navigate = useNavigate();
 
-  const { register, handleSubmit, reset } = useForm<PlantaForm>({
-    defaultValues: plantaEdit || {
-      nombre: '',
-      especie: '',
-      descripcion: '',
-      cuidados: '',
-    },
-  })
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  const onSubmit = (data: PlantaForm) => {
-    console.log('Guardar planta:', data)
-    // Aquí guardarías en backend y luego rediriges
-    navigate('/home')
-  }
+    // Los datos de la planta que queremos agregar
+    const plantData = { name, species, description, careInstructions };
+
+    try {
+      // Hacemos la petición POST al backend
+      const response = await fetch('http://localhost:5000/api/plants/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(plantData),
+      });
+
+      // Si la respuesta es exitosa, redirige al usuario a la biblioteca
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Planta guardada:', data);
+        navigate('/library'); // Redirige a la página de la biblioteca de plantas
+      } else {
+        console.error('Error al agregar planta');
+      }
+    } catch (error) {
+      console.error('Error al enviar los datos:', error);
+    }
+  };
 
   return (
-    <div className="container mt-4" style={{ maxWidth: 600 }}>
-      <h2>{id ? 'Editar Planta' : 'Agregar Planta'}</h2>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="mb-3">
-          <label className="form-label">Nombre</label>
-          <input className="form-control" {...register('nombre', { required: true })} />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Especie</label>
-          <input className="form-control" {...register('especie', { required: true })} />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Descripción</label>
-          <textarea className="form-control" {...register('descripcion')} />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Cuidados</label>
-          <textarea className="form-control" {...register('cuidados')} />
-        </div>
-        <button className="btn btn-primary" type="submit">
-          Guardar
-        </button>
+    <PlantFormContainer>
+      <Title>{'Agregar Planta'}</Title>
+      <form onSubmit={handleSubmit}>
+        <Input
+          type="text"
+          placeholder="Nombre de la planta"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
+        <Input
+          type="text"
+          placeholder="Especie"
+          value={species}
+          onChange={(e) => setSpecies(e.target.value)}
+          required
+        />
+        <Textarea
+          placeholder="Descripción"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          required
+        />
+        <Textarea
+          placeholder="Instrucciones de cuidado"
+          value={careInstructions}
+          onChange={(e) => setCareInstructions(e.target.value)}
+          required
+        />
+        <Button type="submit">Guardar Planta</Button>
       </form>
-    </div>
-  )
+    </PlantFormContainer>
+  );
 }
