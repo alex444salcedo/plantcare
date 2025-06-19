@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { LoginContainer, Title, Input, Button, LinkText } from './Login.styles';
 
 export default function Login() {
-  const [email, setEmail] = useState('');
+  const [correo, setCorreo] = useState('');  // Cambié 'email' por 'correo'
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -12,19 +12,19 @@ export default function Login() {
     e.preventDefault();
 
     // Validación
-    if (!email || !password) {
+    if (!correo || !password) {
       setError('Por favor ingresa todos los campos.');
       return;
     }
 
-    if (!/\S+@\S+\.\S+/.test(email)) {
+    if (!/\S+@\S+\.\S+/.test(correo)) {
       setError('Por favor ingresa un correo válido.');
       return;
     }
 
     setError(''); // Limpiar el error
 
-    const userData = { email, password };
+    const userData = { correo, password };  // Enviar 'correo' en vez de 'email'
 
     try {
       const response = await fetch('http://localhost:5000/api/auth/login', {
@@ -36,7 +36,7 @@ export default function Login() {
       if (response.ok) {
         const data = await response.json();
         localStorage.setItem('token', data.token); // Guardamos el token
-        navigate('/library'); // Redirigimos a Library
+        navigate('/Inicio'); // Redirigimos a Library
       } else {
         setError('Credenciales incorrectas.');
       }
@@ -53,8 +53,8 @@ export default function Login() {
         <Input
           type="email"
           placeholder="Correo Electrónico"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={correo}
+          onChange={(e) => setCorreo(e.target.value)}  // Usar 'correo' aquí
         />
         <Input
           type="password"
@@ -66,7 +66,7 @@ export default function Login() {
         <Button type="submit">Iniciar Sesión</Button>
       </form>
       <LinkText>
-        ¿No tienes cuenta? <a href="/register">Regístrate aquí</a>
+        ¿No tienes cuenta? <a href="/registro">Regístrate aquí</a>
       </LinkText>
     </LoginContainer>
   );

@@ -1,4 +1,3 @@
-// src/pages/About.styles.js
 import styled from 'styled-components';
 
 export const AboutContainer = styled.div`

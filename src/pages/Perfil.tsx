@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ProfileContainer, Title, Input, Button } from './Profile.styles';
+import { ProfileContainer, Title, Input, Button } from './Perfil.styles';
 
 export default function Profile() {
   const [name, setName] = useState('Alejandro');

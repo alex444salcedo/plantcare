@@ -1,19 +1,31 @@
-import pool from '../config/db.js';
+import db from '../config/db.js';  // Importar la conexión desde db.js
 
-export const createPlant = async (req, res) => {
-  const { name, species, description, careInstructions } = req.body;
+// Guardar contacto
+export const saveContacto = (req, res) => {
+    const { asunto, email_contacto, tipo_consulta, descripcion, adjunto, nivel_urgencia } = req.body;
 
-  if (!name || !species || !description || !careInstructions) {
-    return res.status(400).json({ message: 'Todos los campos son obligatorios' });
-  }
+    const query = 'INSERT INTO contactos (asunto, email_contacto, tipo_consulta, descripcion, adjunto, nivel_urgencia) VALUES (?, ?, ?, ?, ?, ?)';
+    
+    db.query(query, [asunto, email_contacto, tipo_consulta, descripcion, adjunto, nivel_urgencia], (err, results) => {
+        if (err) {
+            console.error('Error al guardar los datos de contacto:', err);
+            return res.status(500).json({ error: 'Hubo un error al guardar los datos de contacto' });
+        }
+        res.status(200).json({ message: 'Formulario de contacto guardado con éxito', id: results.insertId });
+    });
+};
 
-  try {
-    const sql = `INSERT INTO plants (name, species, description, care_instructions) VALUES (?, ?, ?, ?)`;
-    const [result] = await pool.execute(sql, [name, species, description, careInstructions]);
+// Guardar feedback
+export const saveFeedback = (req, res) => {
+    const { descripcion, tipo_feedback } = req.body;
 
-    res.status(201).json({ message: 'Planta agregada con éxito', plantId: result.insertId });
-  } catch (error) {
-    console.error('Error al agregar planta:', error);
-    res.status(500).json({ message: 'Error al agregar planta' });
-  }
+    const query = 'INSERT INTO feedback (descripcion, tipo_feedback) VALUES (?, ?)';
+    
+    db.query(query, [descripcion, tipo_feedback], (err, results) => {
+        if (err) {
+            console.error('Error al guardar el feedback:', err);
+            return res.status(500).json({ error: 'Hubo un error al guardar el feedback' });
+        }
+        res.status(200).json({ message: 'Feedback guardado con éxito', id: results.insertId });
+    });
 };

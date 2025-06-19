@@ -1,13 +1,16 @@
+// src/components/PrivateRoute.tsx
 import { Navigate } from 'react-router-dom';
 
 const PrivateRoute = ({ element }: { element: JSX.Element }) => {
   const token = localStorage.getItem('token');
 
   if (!token) {
-    return <Navigate to="/login" />; // Redirigir a login si no hay token
+    // Si no hay token, redirige al login
+    return <Navigate to="/login" />;
   }
 
-  return element; // Si hay token, renderiza el componente
+  // Si hay token, renderiza el componente protegido
+  return element;
 };
 
 export default PrivateRoute;
